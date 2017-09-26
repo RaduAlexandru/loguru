@@ -187,6 +187,8 @@ Website: www.ilikebigbits.com
 	#define LOGURU_NO_UPTIME 0
 #endif
 
+#define LOG_SCOPE            LOG_SCOPE_F //can safely be defined because GLOG doesn't have anything like this
+
 #ifndef LOGURU_SCOPE_TEXT_SIZE
 	// Maximum length of text that can be printed by a LOG_SCOPE.
 	// This should be long enough to get most things, but short enough not to clutter the stack.
