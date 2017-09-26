@@ -182,6 +182,11 @@ Website: www.ilikebigbits.com
 	#define LOGURU_NO_DATE_TIME 0
 #endif
 
+#ifndef LOGURU_NO_UPTIME
+	//If set to 1 then no uptime will be added to the preamble
+	#define LOGURU_NO_UPTIME 0
+#endif
+
 #ifndef LOGURU_SCOPE_TEXT_SIZE
 	// Maximum length of text that can be printed by a LOG_SCOPE.
 	// This should be long enough to get most things, but short enough not to clutter the stack.
@@ -2292,19 +2297,36 @@ namespace loguru
 
 
 		#if LOGURU_NO_DATE_TIME
-			snprintf(out_buff, out_buff_size, "(%8.3fs) [%-*s]%*s:%-5u %4s| ",
-				uptime_sec,
-				LOGURU_THREADNAME_WIDTH, thread_name,
-				LOGURU_FILENAME_WIDTH,
-				file, line, level_buff);
+			#if LOGURU_NO_UPTIME
+				snprintf(out_buff, out_buff_size, "[%-*s]%*s:%-5u %4s| ",
+					LOGURU_THREADNAME_WIDTH, thread_name,
+					LOGURU_FILENAME_WIDTH,
+					file, line, level_buff);
+			#else
+				snprintf(out_buff, out_buff_size, "(%8.3fs) [%-*s]%*s:%-5u %4s| ",
+					uptime_sec,
+					LOGURU_THREADNAME_WIDTH, thread_name,
+					LOGURU_FILENAME_WIDTH,
+					file, line, level_buff);
+			#endif
 		#else
-			snprintf(out_buff, out_buff_size, "%04d-%02d-%02d %02d:%02d:%02d.%03lld (%8.3fs) [%-*s]%*s:%-5u %4s| ",
-				1900 + time_info.tm_year, 1 + time_info.tm_mon, time_info.tm_mday,
-				time_info.tm_hour, time_info.tm_min, time_info.tm_sec, ms_since_epoch % 1000,
-				uptime_sec,
-				LOGURU_THREADNAME_WIDTH, thread_name,
-				LOGURU_FILENAME_WIDTH,
-				file, line, level_buff);
+			#if LOGURU_NO_UPTIME
+				snprintf(out_buff, out_buff_size, "%04d-%02d-%02d %02d:%02d:%02d.%03lld [%-*s]%*s:%-5u %4s| ",
+					1900 + time_info.tm_year, 1 + time_info.tm_mon, time_info.tm_mday,
+					time_info.tm_hour, time_info.tm_min, time_info.tm_sec, ms_since_epoch % 1000,
+					LOGURU_THREADNAME_WIDTH, thread_name,
+					LOGURU_FILENAME_WIDTH,
+					file, line, level_buff);
+			#else
+				snprintf(out_buff, out_buff_size, "%04d-%02d-%02d %02d:%02d:%02d.%03lld (%8.3fs) [%-*s]%*s:%-5u %4s| ",
+					1900 + time_info.tm_year, 1 + time_info.tm_mon, time_info.tm_mday,
+					time_info.tm_hour, time_info.tm_min, time_info.tm_sec, ms_since_epoch % 1000,
+					uptime_sec,
+					LOGURU_THREADNAME_WIDTH, thread_name,
+					LOGURU_FILENAME_WIDTH,
+					file, line, level_buff);
+			#endif
+
 
 		#endif
 
@@ -2350,7 +2372,7 @@ namespace loguru
 					fprintf(stderr, "%s%s%s%s%s%s%s%s\n",
 						terminal_reset(),
 						terminal_bold(),
-						verbosity == Verbosity_WARNING ? terminal_red() : terminal_light_red(),
+						verbosity == Verbosity_WARNING ? terminal_yellow() : terminal_light_red(),
 						message.preamble,
 						message.indentation,
 						message.prefix,
