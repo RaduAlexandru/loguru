@@ -2820,7 +2820,7 @@ namespace loguru
 		{ SIGILL,  "SIGILL"  },
 		{ SIGINT,  "SIGINT"  },
 		{ SIGSEGV, "SIGSEGV" },
-		{ SIGTERM, "SIGTERM" },
+		// { SIGTERM, "SIGTERM" },
 	};
 
 	void write_to_stderr(const char* data, size_t size)
