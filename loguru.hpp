@@ -177,6 +177,11 @@ Website: www.ilikebigbits.com
 
 // ----------------------------------------------------------------------------
 
+#ifndef LOGURU_NO_DATE_TIME
+	//If set to 1 then no date or time will be added to the preamble
+	#define LOGURU_NO_DATE_TIME 0
+#endif
+
 #ifndef LOGURU_SCOPE_TEXT_SIZE
 	// Maximum length of text that can be printed by a LOG_SCOPE.
 	// This should be long enough to get most things, but short enough not to clutter the stack.
@@ -185,12 +190,12 @@ Website: www.ilikebigbits.com
 
 #ifndef LOGURU_FILENAME_WIDTH
 	// Width of the column containing the file name
-	#define LOGURU_FILENAME_WIDTH 23
+	#define LOGURU_FILENAME_WIDTH 12
 #endif
 
 #ifndef LOGURU_THREADNAME_WIDTH
 	// Width of the column containing the thread name
-	#define LOGURU_THREADNAME_WIDTH 16
+	#define LOGURU_THREADNAME_WIDTH 12
 #endif
 
 #ifndef LOGURU_CATCH_SIGABRT
@@ -1449,9 +1454,18 @@ namespace loguru
 		#endif
 	}();
 
-	const auto PREAMBLE_EXPLAIN = textprintf("date       time         ( uptime  ) [%-*s]%*s:line     v| ",
-											 LOGURU_THREADNAME_WIDTH, " thread name/id",
-											 LOGURU_FILENAME_WIDTH, "file");
+	#if LOGURU_NO_DATE_TIME
+		const auto PREAMBLE_EXPLAIN = textprintf("( uptime  ) [%-*s]%*s:line     v| ",
+												 LOGURU_THREADNAME_WIDTH, " thread name/id",
+												 LOGURU_FILENAME_WIDTH, "file");
+	#else
+		const auto PREAMBLE_EXPLAIN = textprintf("date       time         ( uptime  ) [%-*s]%*s:line     v| ",
+											 	 LOGURU_THREADNAME_WIDTH, " thread name/id",
+											 	 LOGURU_FILENAME_WIDTH, "file");
+	#endif
+
+
+
 
 	#if LOGURU_PTLS_NAMES
 		static pthread_once_t s_pthread_key_once = PTHREAD_ONCE_INIT;
@@ -2276,13 +2290,25 @@ namespace loguru
 			snprintf(level_buff, sizeof(level_buff) - 1, "% 4d", verbosity);
 		}
 
-		snprintf(out_buff, out_buff_size, "%04d-%02d-%02d %02d:%02d:%02d.%03lld (%8.3fs) [%-*s]%*s:%-5u %4s| ",
-			1900 + time_info.tm_year, 1 + time_info.tm_mon, time_info.tm_mday,
-			time_info.tm_hour, time_info.tm_min, time_info.tm_sec, ms_since_epoch % 1000,
-			uptime_sec,
-			LOGURU_THREADNAME_WIDTH, thread_name,
-			LOGURU_FILENAME_WIDTH,
-			file, line, level_buff);
+
+		#if LOGURU_NO_DATE_TIME
+			snprintf(out_buff, out_buff_size, "(%8.3fs) [%-*s]%*s:%-5u %4s| ",
+				uptime_sec,
+				LOGURU_THREADNAME_WIDTH, thread_name,
+				LOGURU_FILENAME_WIDTH,
+				file, line, level_buff);
+		#else
+			snprintf(out_buff, out_buff_size, "%04d-%02d-%02d %02d:%02d:%02d.%03lld (%8.3fs) [%-*s]%*s:%-5u %4s| ",
+				1900 + time_info.tm_year, 1 + time_info.tm_mon, time_info.tm_mday,
+				time_info.tm_hour, time_info.tm_min, time_info.tm_sec, ms_since_epoch % 1000,
+				uptime_sec,
+				LOGURU_THREADNAME_WIDTH, thread_name,
+				LOGURU_FILENAME_WIDTH,
+				file, line, level_buff);
+
+		#endif
+
+
 	}
 
 	// stack_trace_skip is just if verbosity == FATAL.
