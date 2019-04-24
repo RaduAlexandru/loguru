@@ -1410,7 +1410,7 @@ namespace loguru
 
 	const auto s_start_time = steady_clock::now();
 
-	Verbosity g_stderr_verbosity  = Verbosity_0;
+	Verbosity g_stderr_verbosity  = Verbosity_2;
 	bool      g_colorlogtostderr  = true;
 	unsigned  g_flush_interval_ms = 0;
 
