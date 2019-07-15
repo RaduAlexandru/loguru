@@ -219,7 +219,7 @@ Website: www.ilikebigbits.com
 #endif
 
 #ifndef LOGURU_REPLACE_GLOG
-	#define LOGURU_REPLACE_GLOG 0
+	#define LOGURU_REPLACE_GLOG 1
 #endif
 
 #if LOGURU_REPLACE_GLOG
