@@ -179,12 +179,12 @@ Website: www.ilikebigbits.com
 
 #ifndef LOGURU_NO_DATE_TIME
 	//If set to 1 then no date or time will be added to the preamble
-	#define LOGURU_NO_DATE_TIME 0
+	#define LOGURU_NO_DATE_TIME 1
 #endif
 
 #ifndef LOGURU_NO_UPTIME
 	//If set to 1 then no uptime will be added to the preamble
-	#define LOGURU_NO_UPTIME 0
+	#define LOGURU_NO_UPTIME 1
 #endif
 
 #define LOG_SCOPE            LOG_SCOPE_F //can safely be defined because GLOG doesn't have anything like this
